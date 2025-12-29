@@ -1,19 +1,22 @@
+// server/index.js
 import express from "express";
 import multer from "multer";
+import dotenv from "dotenv";
 import { db } from "./db.js";
-import { fakeAuth } from "./auth.js";
+import { setupAuth } from "./auth.js";
 import { requireRole } from "./middleware.js";
+
+dotenv.config();
 
 const app = express();
 const upload = multer({ dest: "uploads/" });
 
 app.use(express.json());
-app.use(fakeAuth);
 app.use(express.static("public"));
 
-/* =========================
-   GLOBAL LIST (público)
-   ========================= */
+setupAuth(app);
+
+/* GLOBAL LIST */
 app.get("/api/emojis", (req, res) => {
   db.all(
     "SELECT * FROM emojis WHERE status = 'approved'",
@@ -21,9 +24,7 @@ app.get("/api/emojis", (req, res) => {
   );
 });
 
-/* =========================
-   UPLOAD (p-)
-   ========================= */
+/* UPLOAD p- */
 app.post(
   "/api/upload",
   requireRole("p-"),
@@ -33,21 +34,18 @@ app.post(
       `INSERT INTO emojis (unicode, author, file, status)
        VALUES (?, ?, ?, 'pending')`,
       [req.body.unicode, req.user.username, req.file.filename],
-      () => res.send("[sys] emoji submitted for review")
+      () => res.send("[sys] your emoji was submitted for review")
     );
   }
 );
 
-/* =========================
-   MODERAÇÃO (p+)
-   ========================= */
+/* MODERAÇÃO p+ */
 app.post(
   "/api/moderate",
   requireRole("p+"),
   (req, res) => {
     const { id, status, note } = req.body;
 
-    // Reject / Almost precisam de nota
     if ((status === "rejected" || status === "almost") && !note) {
       return res.status(400).send("admin note required");
     }
@@ -60,6 +58,7 @@ app.post(
   }
 );
 
-app.listen(3000, () =>
-  console.log("freezing3moji running on http://localhost:3000")
+const PORT = process.env.PORT || 8787;
+app.listen(PORT, () =>
+  console.log(`freezing3moji ❄️ running on port ${PORT}`)
 );
