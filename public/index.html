@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>freezing3moji ❄️</h1>
+  <div id="list"></div>
+
+  <script>
+    fetch("/api/emojis")
+      .then(r => r.json())
+      .then(data => {
+        data.forEach(e => {
+          const img = document.createElement("img");
+          img.src = "/uploads/" + e.file;
+          img.width = 64;
+          document.getElementById("list").appendChild(img);
+        });
+      });
+  </script>
+</body>
+</html>
