@@ -1,18 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>freezing3moji</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .grid {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 64px);
+      gap: 12px;
+    }
+
+    img {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      background: #020617;
+    }
+
+    a {
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
 <body>
-  <h1>freezing3moji ❄️</h1>
-  <div id="list"></div>
+  <header>
+    <h1>freezing3moji ❄️</h1>
+    <div>
+      <a href="/upload.html">upload</a> |
+      <a href="/admin.html">admin</a> |
+      <a href="/auth/github">login</a>
+    </div>
+  </header>
+
+  <div class="grid" id="list"></div>
 
   <script>
     fetch("/api/emojis")
       .then(r => r.json())
       .then(data => {
+        const list = document.getElementById("list");
         data.forEach(e => {
           const img = document.createElement("img");
           img.src = "/uploads/" + e.file;
-          img.width = 64;
-          document.getElementById("list").appendChild(img);
+          img.title = e.unicode;
+          list.appendChild(img);
         });
       });
   </script>

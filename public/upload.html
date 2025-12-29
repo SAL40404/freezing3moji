@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Upload emoji</title>
+  <style>
+    body {
+      font-family: system-ui;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 30px;
+    }
+
+    input, button {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    button {
+      padding: 10px;
+      background: #2563eb;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Submit emoji</h2>
+
+  <form id="form">
+    <label>Unicode</label>
+    <input name="unicode" placeholder="U+1F922" required>
+
+    <label>Emoji file (64x64)</label>
+    <input type="file" name="emoji" required>
+
+    <button>send</button>
+  </form>
+
+  <p id="msg"></p>
+
+  <script>
+    const form = document.getElementById("form");
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const data = new FormData(form);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: data
+      });
+
+      document.getElementById("msg").innerText =
+        await res.text();
+    };
+  </script>
+</body>
+</html>
